@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --primary: #6fadce;
+  --typography: #ddf3ff;
+  --background: #182731;
+  --error: #ff1e1e;
+}
