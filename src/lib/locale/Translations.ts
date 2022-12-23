@@ -23,7 +23,7 @@ export const PL_PL: Dictionary = {
   compontents: {
     header: {
       title: 'React tłumacz',
-      select: 'Wykryj język:',
+      select: 'Wybierz język:',
     },
     translator: {
       select: 'Wykryj język',

@@ -5,7 +5,7 @@ type SelectLangaugeProps = {
   languages: Array<Language>;
   onChange(newCode: LanguageCode): void;
   selectedLanguage: LanguageCode;
-  exclude: LanguageCode;
+  exclude: Array<LanguageCode>;
 };
 
 const SelectLangue: FC<SelectLangaugeProps> = ({
@@ -15,7 +15,7 @@ const SelectLangue: FC<SelectLangaugeProps> = ({
   exclude,
 }) => {
   const filteredLanguages = useMemo(
-    () => languages.filter((language) => language.code !== exclude),
+    () => languages.filter((language) => !exclude.includes(language.code)),
     [languages, exclude]
   );
 

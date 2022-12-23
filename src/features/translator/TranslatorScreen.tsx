@@ -55,7 +55,7 @@ const TranslatorScreen: FC<ItranslatorProps> = ({ appLanguage }) => {
         <div className="">
           <SelectLangue
             languages={languages}
-            exclude={selectedLanguage.target}
+            exclude={[selectedLanguage.target]}
             onChange={(newCode) =>
               setSelectedLanguage((prevState) => ({
                 ...prevState,
@@ -106,7 +106,7 @@ const TranslatorScreen: FC<ItranslatorProps> = ({ appLanguage }) => {
         <div>
           <SelectLangue
             languages={languages}
-            exclude={(selectedLanguage.source, LanguageCode.Auto)}
+            exclude={[selectedLanguage.source, LanguageCode.Auto]}
             onChange={(newCode) =>
               setSelectedLanguage((prevState) => ({
                 ...prevState,

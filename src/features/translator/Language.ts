@@ -4,7 +4,7 @@ export type SelectedLanguages = {
 };
 
 export type Language = {
-  code: string;
+  code: LanguageCode;
   name: string;
 };
 
