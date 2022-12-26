@@ -8,6 +8,11 @@ export type Language = {
   name: string;
 };
 
+export type AutoDetectedLanguage = {
+  confidence: number;
+  language: LanguageCode;
+};
+
 export enum LanguageCode {
   Auto = 'auto',
   English = 'en',

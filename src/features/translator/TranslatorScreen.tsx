@@ -1,38 +1,64 @@
 import { FC, useState, useEffect } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 import useTranslations from '../../lib/hooks/useTranslations';
-import Images from '../../assets';
 import useSupportedLanguages from './useSupportedLanguages';
 import SelectLangue from './SelectLangue';
 import Loading from './Loading';
 import Error from './Error';
-import { LanguageCode, Language, SelectedLanguages } from './Language';
 
-type ItranslatorProps = {
+import {
+  LanguageCode,
+  Language,
+  SelectedLanguages,
+  AutoDetectedLanguage,
+} from './Language';
+import Confidence from './Confidence';
+import Input from './Input';
+import SwapLanguages from './SwapLanguages';
+import useAutoDetect from './useAutoDetect';
+
+type TranslatorProps = {
   appLanguage: string;
 };
 
-const TranslatorScreen: FC<ItranslatorProps> = ({ appLanguage }) => {
+const TranslatorScreen: FC<TranslatorProps> = ({ appLanguage }) => {
   const [inputValue, setInputValue] = useState<string>('');
   const [languages, setLanguages] = useState<Array<Language>>([]);
+  const [autoDetectedLanguage, setAutoDetectedLanguage] = useState<
+    Array<AutoDetectedLanguage>
+  >([{ confidence: 0, language: LanguageCode.English }]);
   const [selectedLanguage, setSelectedLanguage] = useState<SelectedLanguages>({
     source: LanguageCode.Auto,
     target: LanguageCode.English,
   });
   const T = useTranslations(appLanguage);
-  const autoDetect = {
-    code: LanguageCode.Auto,
-    name: `${T.compontents.translator.select}`,
-  };
   const {
     fetchData: getSupportedLanguages,
     isLoading,
     hasError,
-  } = useSupportedLanguages(setLanguages, autoDetect);
+  } = useSupportedLanguages(setLanguages);
+  const {
+    fetchData: getAutoDetectLanguage,
+    isLoading: isDetectingLanguage,
+    hasError: hasErrorDetectingLanguage,
+  } = useAutoDetect(setAutoDetectedLanguage);
 
   useEffect(() => {
     getSupportedLanguages();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const debounceCallback = useDebouncedCallback(() => {
+    if (selectedLanguage.source === LanguageCode.Auto) {
+      getAutoDetectLanguage(inputValue);
+    }
+  }, 1000);
+
+  useEffect(() => {
+    if (inputValue.length > 1) {
+      debounceCallback();
+    }
+  }, [debounceCallback, inputValue]);
 
   if (isLoading) {
     return <Loading text={T.compontents.translator.loading} />;
@@ -50,9 +76,9 @@ const TranslatorScreen: FC<ItranslatorProps> = ({ appLanguage }) => {
     return <Error text={T.compontents.translator.no_langauges} />;
   }
   return (
-    <main className="bg-background flex justify-center items-center h-10/12 h-min-fit overflow-auto">
-      <form className="flex flex-col gap-2 sm:flex-row sm:gap-10 ">
-        <div className="">
+    <main className="bg-background h-10/12 w-screen overflow-auto">
+      <form className="flex flex-col w-full h-full justify-center items-center gap-2 sm:flex-row sm:gap-10 ">
+        <div className="w-60 h-60">
           <SelectLangue
             languages={languages}
             exclude={[selectedLanguage.target]}
@@ -64,30 +90,21 @@ const TranslatorScreen: FC<ItranslatorProps> = ({ appLanguage }) => {
             }
             selectedLanguage={selectedLanguage.source}
           />
-          <textarea
-            onChange={(e) => setInputValue(e.target.value)}
-            value={inputValue}
-            className="p-2 h-40 w-60 resize-none"
+          <Input
+            inputValue={inputValue}
+            setInputValue={setInputValue}
+            isLoading={isDetectingLanguage}
           />
-          <div className="h-2">
-            <div className="bg-primary h-1 animate-loading" />
-          </div>
-          <div className="flex justify-between">
-            <span className="text-typography">(68%) polish</span>
-            <span
-              style={{
-                color: `${
-                  inputValue.length > 2000
-                    ? 'var(--error)'
-                    : 'var(--typography)'
-                }`,
-              }}
-              className="text-typography"
-            >{`${inputValue.length}/2000`}</span>
-          </div>
+          <Confidence
+            inputValue={inputValue}
+            autoDetectedLanguage={autoDetectedLanguage[0]}
+            hasError={
+              hasErrorDetectingLanguage &&
+              selectedLanguage.source === LanguageCode.Auto
+            }
+          />
         </div>
-        <button
-          type="button"
+        <SwapLanguages
           onClick={() => {
             if (selectedLanguage.source !== LanguageCode.Auto)
               setSelectedLanguage((prevState) => ({
@@ -95,15 +112,8 @@ const TranslatorScreen: FC<ItranslatorProps> = ({ appLanguage }) => {
                 source: prevState.target,
               }));
           }}
-          className="flex items-center justify-center"
-        >
-          <img
-            className="h-10 cursor-pointer invert"
-            src={Images.arrows}
-            alt=""
-          />
-        </button>
-        <div>
+        />
+        <div className="h-60">
           <SelectLangue
             languages={languages}
             exclude={[selectedLanguage.source, LanguageCode.Auto]}
@@ -115,14 +125,7 @@ const TranslatorScreen: FC<ItranslatorProps> = ({ appLanguage }) => {
             }
             selectedLanguage={selectedLanguage.target}
           />
-          <textarea
-            value={inputValue}
-            readOnly
-            className="p-2 h-40 w-60 resize-none"
-          />
-          <div className="h-2">
-            <div className="bg-primary h-1 animate-loading" />
-          </div>
+          <Input inputValue={inputValue} isLoading={isDetectingLanguage} />
         </div>
       </form>
     </main>

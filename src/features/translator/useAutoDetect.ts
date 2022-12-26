@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import APP_CONFIG from '../../lib/config';
-import { Language, LanguageCode } from './Language';
+import { AutoDetectedLanguage } from './Language';
 
-const useSupportedLanguages = (
-  onSucces: (languages: Array<Language>) => void
+const useAutoDetect = (
+  onSucces: (languages: Array<AutoDetectedLanguage>) => void
 ) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasError, setHasError] = useState<boolean>(false);
@@ -11,11 +11,16 @@ const useSupportedLanguages = (
   return {
     isLoading,
     hasError,
-    fetchData: () => {
+    fetchData: (query: string) => {
       setIsLoading(true);
       setHasError(false);
 
-      fetch(`${APP_CONFIG.API_URL}/languages`)
+      fetch(`${APP_CONFIG.API_URL}/detect`, {
+        method: 'POST',
+        body: JSON.stringify({
+          q: query,
+        }),
+      })
         .then((res) => {
           if (res.ok) {
             return res;
@@ -24,14 +29,8 @@ const useSupportedLanguages = (
           throw err;
         })
         .then((res) => res.json())
-        .then((languages) => {
-          const allLanguages: Array<Language> = [
-            {
-              code: LanguageCode.Auto,
-              name: 'Auto Detect',
-            },
-          ].concat(languages);
-          onSucces(allLanguages);
+        .then((autoDetectedLanguage) => {
+          onSucces([autoDetectedLanguage]);
         })
         .catch((err) => {
           setHasError(true);
@@ -45,4 +44,4 @@ const useSupportedLanguages = (
   };
 };
 
-export default useSupportedLanguages;
+export default useAutoDetect;
