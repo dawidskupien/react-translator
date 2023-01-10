@@ -1,7 +1,6 @@
 import { FC, useState, useEffect } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import useTranslations from '../../lib/hooks/useTranslations';
-import useSupportedLanguages from './useSupportedLanguages';
 import SelectLangue from './SelectLangue';
 import Loading from './Loading';
 import Error from './Error';
@@ -11,11 +10,12 @@ import {
   Language,
   SelectedLanguages,
   AutoDetectedLanguage,
+  TranslatedText,
 } from './Language';
 import Confidence from './Confidence';
 import Input from './Input';
 import SwapLanguages from './SwapLanguages';
-import useAutoDetect from './useAutoDetect';
+import { useAutoDetect, useSupportedLanguages, useTranslate } from './actions';
 
 type TranslatorProps = {
   appLanguage: string;
@@ -24,12 +24,17 @@ type TranslatorProps = {
 const TranslatorScreen: FC<TranslatorProps> = ({ appLanguage }) => {
   const [inputValue, setInputValue] = useState<string>('');
   const [languages, setLanguages] = useState<Array<Language>>([]);
-  const [autoDetectedLanguage, setAutoDetectedLanguage] = useState<
-    Array<AutoDetectedLanguage>
-  >([{ confidence: 0, language: LanguageCode.English }]);
+  const [autoDetectedLanguage, setAutoDetectedLanguage] =
+    useState<AutoDetectedLanguage>({
+      confidence: 0,
+      language: LanguageCode.English,
+    });
   const [selectedLanguage, setSelectedLanguage] = useState<SelectedLanguages>({
     source: LanguageCode.Auto,
     target: LanguageCode.English,
+  });
+  const [translatedText, setTranslatedText] = useState<TranslatedText>({
+    translatedText: '',
   });
   const T = useTranslations(appLanguage);
   const {
@@ -43,6 +48,12 @@ const TranslatorScreen: FC<TranslatorProps> = ({ appLanguage }) => {
     hasError: hasErrorDetectingLanguage,
   } = useAutoDetect(setAutoDetectedLanguage);
 
+  const {
+    fetchData: getTranslatedLanguage,
+    isLoading: isTranslatingLanguage,
+    hasError: hasErrorTranslatingLanguage,
+  } = useTranslate(setTranslatedText);
+
   useEffect(() => {
     getSupportedLanguages();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -50,10 +61,17 @@ const TranslatorScreen: FC<TranslatorProps> = ({ appLanguage }) => {
 
   const debounceCallback = useDebouncedCallback(() => {
     if (selectedLanguage.source === LanguageCode.Auto) {
-      getAutoDetectLanguage(inputValue);
+      getAutoDetectLanguage({
+        q: inputValue,
+      });
     }
+    getTranslatedLanguage({
+      q: inputValue,
+      source: selectedLanguage.source,
+      target: selectedLanguage.target,
+      format: 'text',
+    });
   }, 1000);
-
   useEffect(() => {
     if (inputValue.length > 1) {
       debounceCallback();
@@ -77,57 +95,74 @@ const TranslatorScreen: FC<TranslatorProps> = ({ appLanguage }) => {
   }
   return (
     <main className="bg-background h-10/12 w-screen overflow-auto">
-      <form className="flex flex-col w-full h-full justify-center items-center gap-2 sm:flex-row sm:gap-10 ">
-        <div className="w-60 h-60">
-          <SelectLangue
-            languages={languages}
-            exclude={[selectedLanguage.target]}
-            onChange={(newCode) =>
-              setSelectedLanguage((prevState) => ({
-                ...prevState,
-                source: newCode,
-              }))
-            }
-            selectedLanguage={selectedLanguage.source}
+      <div className="flex h-full justify-center items-center">
+        <form className="flex flex-col h-max sm:flex-row sm:gap-10 ">
+          <div>
+            <SelectLangue
+              languages={languages}
+              exclude={[selectedLanguage.target]}
+              onChange={(newCode) =>
+                setSelectedLanguage((prevState) => ({
+                  ...prevState,
+                  source: newCode,
+                }))
+              }
+              selectedLanguage={selectedLanguage.source}
+            />
+            <Input
+              inputValue={inputValue}
+              setInputValue={setInputValue}
+              isLoading={isDetectingLanguage}
+            />
+            <Confidence
+              onClick={() => {
+                if (!hasErrorDetectingLanguage) {
+                  setSelectedLanguage({
+                    ...selectedLanguage,
+                    source: autoDetectedLanguage.language,
+                  });
+                }
+              }}
+              inputValue={inputValue}
+              autoDetectedLanguage={autoDetectedLanguage}
+              hasError={
+                hasErrorDetectingLanguage &&
+                selectedLanguage.source === LanguageCode.Auto
+              }
+            />
+          </div>
+          <SwapLanguages
+            onClick={() => {
+              if (selectedLanguage.source !== LanguageCode.Auto) {
+                setSelectedLanguage((prevState) => ({
+                  target: prevState.source,
+                  source: prevState.target,
+                }));
+                setTranslatedText({ translatedText: inputValue });
+                setInputValue(translatedText.translatedText);
+              }
+            }}
           />
-          <Input
-            inputValue={inputValue}
-            setInputValue={setInputValue}
-            isLoading={isDetectingLanguage}
-          />
-          <Confidence
-            inputValue={inputValue}
-            autoDetectedLanguage={autoDetectedLanguage[0]}
-            hasError={
-              hasErrorDetectingLanguage &&
-              selectedLanguage.source === LanguageCode.Auto
-            }
-          />
-        </div>
-        <SwapLanguages
-          onClick={() => {
-            if (selectedLanguage.source !== LanguageCode.Auto)
-              setSelectedLanguage((prevState) => ({
-                target: prevState.source,
-                source: prevState.target,
-              }));
-          }}
-        />
-        <div className="h-60">
-          <SelectLangue
-            languages={languages}
-            exclude={[selectedLanguage.source, LanguageCode.Auto]}
-            onChange={(newCode) =>
-              setSelectedLanguage((prevState) => ({
-                ...prevState,
-                target: newCode,
-              }))
-            }
-            selectedLanguage={selectedLanguage.target}
-          />
-          <Input inputValue={inputValue} isLoading={isDetectingLanguage} />
-        </div>
-      </form>
+          <div>
+            <SelectLangue
+              languages={languages}
+              exclude={[selectedLanguage.source, LanguageCode.Auto]}
+              onChange={(newCode) =>
+                setSelectedLanguage((prevState) => ({
+                  ...prevState,
+                  target: newCode,
+                }))
+              }
+              selectedLanguage={selectedLanguage.target}
+            />
+            <Input
+              inputValue={translatedText?.translatedText}
+              isLoading={isTranslatingLanguage}
+              hasError={hasErrorTranslatingLanguage}
+            />
+          </div>
+        </form>
+      </div>
     </main>
   );
 };

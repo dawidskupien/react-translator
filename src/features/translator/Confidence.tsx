@@ -2,21 +2,19 @@ import { FC, useCallback } from 'react';
 import { AutoDetectedLanguage, LanguageCode } from './Language';
 import APP_CONFIG from '../../lib/config';
 
-type IConfidenceProps = {
+type ConfidenceProps = {
   inputValue: string;
   autoDetectedLanguage: AutoDetectedLanguage;
   hasError: boolean;
+  onClick: () => void;
 };
 
-const Confidence: FC<IConfidenceProps> = ({
+const Confidence: FC<ConfidenceProps> = ({
   inputValue,
   autoDetectedLanguage,
   hasError,
+  onClick,
 }) => {
-  const toPercentage = (n: number): string => {
-    const t = n * 100;
-    return `${t.toFixed()}% `;
-  };
   const getFullLanguageName = useCallback(() => {
     if (!autoDetectedLanguage) {
       return undefined;
@@ -35,19 +33,19 @@ const Confidence: FC<IConfidenceProps> = ({
     if (!autoDetectedLanguage) {
       return '';
     }
-
-    return `(${toPercentage(
-      autoDetectedLanguage.confidence
-    )} ${getFullLanguageName()})`;
+    return `(${autoDetectedLanguage.confidence}% ${getFullLanguageName()})`;
   }, [autoDetectedLanguage, getFullLanguageName, hasError]);
-
   return (
-    <div className="flex justify-between w-full">
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex justify-between w-full"
+    >
       <span
         style={{
-          color: `${hasError ? 'var(--error)' : 'var(--typography)'}`,
+          color: `${hasError ? 'var(--error)' : 'white'}`,
         }}
-        className="text-typography text-sm cursor-pointer"
+        className="text-typography cursor-pointer"
       >
         {getMessage()}
       </span>
@@ -60,9 +58,9 @@ const Confidence: FC<IConfidenceProps> = ({
               : 'var(--typography)'
           }`,
         }}
-        className="text-typography text-sm"
+        className="text-typography"
       >{`${inputValue.length}/${APP_CONFIG.MAX_INPUT_LENGTH}`}</span>
-    </div>
+    </button>
   );
 };
 

@@ -12,7 +12,7 @@ const SwapLanguages: FC<SwapLanguagesProps> = ({ onClick }) => {
       onClick={onClick}
       className="flex items-center justify-center cursor-default"
     >
-      <img className="h-10 cursor-pointer invert" src={Images.arrows} alt="" />
+      <img className="h-12 cursor-pointer invert" src={Images.arrows} alt="" />
     </button>
   );
 };

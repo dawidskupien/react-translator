@@ -13,6 +13,10 @@ export type AutoDetectedLanguage = {
   language: LanguageCode;
 };
 
+export type TranslatedText = {
+  translatedText: string;
+};
+
 export enum LanguageCode {
   Auto = 'auto',
   English = 'en',

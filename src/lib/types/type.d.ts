@@ -1,1 +1,1 @@
-type IselectHandler = (e: React.ChangeEvent<HTMLSelectElement>) => void;
+type SelectHandler = (e: React.ChangeEvent<HTMLSelectElement>) => void;

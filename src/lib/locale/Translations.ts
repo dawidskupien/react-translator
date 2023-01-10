@@ -14,7 +14,7 @@ export const EN_US: Dictionary = {
       no_langauges: 'No supported languages',
     },
     footer: {
-      year: 'year',
+      text: 'year',
     },
   },
 };
@@ -33,7 +33,7 @@ export const PL_PL: Dictionary = {
       no_langauges: 'Brak wspieranych języków',
     },
     footer: {
-      year: 'rok',
+      text: 'rok',
     },
   },
 };

@@ -12,7 +12,7 @@ export type Dictionary = {
       no_langauges: string;
     };
     footer: {
-      year: string;
+      text: string;
     };
   };
 };

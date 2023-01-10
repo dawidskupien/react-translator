@@ -23,7 +23,7 @@ const SelectLangue: FC<SelectLangaugeProps> = ({
     <select
       value={selectedLanguage}
       onChange={(e) => onChange(e.target.value as LanguageCode)}
-      className="flex w-3/4 my-2"
+      className="flex h-6 w-3/4 my-2"
     >
       {filteredLanguages.map((language) => (
         <option value={language.code} key={language.code}>

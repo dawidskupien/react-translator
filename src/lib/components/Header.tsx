@@ -2,15 +2,15 @@ import { FC } from 'react';
 import Images from '../../assets';
 import useTranslations from '../hooks/useTranslations';
 
-type IheaderProps = {
+type HeaderProps = {
   setAppLanguage: (e: string) => void;
   appLanguage: string;
 };
 
-const Header: FC<IheaderProps> = ({ setAppLanguage, appLanguage }) => {
+const Header: FC<HeaderProps> = ({ setAppLanguage, appLanguage }) => {
   const T = useTranslations(appLanguage);
 
-  const selectHandler: IselectHandler = (e) => {
+  const selectHandler: SelectHandler = (e) => {
     setAppLanguage(e.target.value);
   };
 
