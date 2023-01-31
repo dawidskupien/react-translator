@@ -19,7 +19,7 @@ const Input: FC<InputProps> = ({
     <div>
       <textarea
         style={{
-          borderColor: `${hasError ? 'var(--error)' : 'var(--)'}`,
+          borderColor: `${hasError ? 'var(--error)' : 'var(--typography)'}`,
         }}
         onChange={(e) => {
           if (setInputValue) {
@@ -27,7 +27,7 @@ const Input: FC<InputProps> = ({
           }
         }}
         value={inputValue}
-        className="p-2 h-52 w-80 resize-none border-2"
+        className="p-2 h-52 w-full resize-none border-2 text-typography bg-secondary border-primary"
       />
       <div className="h-2">
         {isLoading && <div className="bg-primary h-1 animate-loading" />}

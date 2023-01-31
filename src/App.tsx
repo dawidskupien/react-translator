@@ -1,15 +1,13 @@
-import { useState } from 'react';
-import TranslatorScreen from './features/translator/TranslatorScreen';
-import Header from './lib/components/Header';
-import Footer from './lib/components/Footer';
+import TranslatorScreen from './features/translator/components/TranslatorScreen';
+import Header from './components/Header';
+import Footer from './components/Footer';
 
 function App() {
-  const [appLanguage, setAppLanguage] = useState<string>('US');
   return (
-    <div className="h-screen">
-      <Header setAppLanguage={setAppLanguage} appLanguage={appLanguage} />
-      <TranslatorScreen appLanguage={appLanguage} />
-      <Footer appLanguage={appLanguage} />
+    <div className="flex min-h-screen flex-col">
+      <Header />
+      <TranslatorScreen />
+      <Footer />
     </div>
   );
 }

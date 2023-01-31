@@ -1,4 +1,4 @@
-import { LanguageCode } from '../../features/translator/Language';
+import { LanguageCode } from '../features/translator/Language';
 
 export enum HttpMethod {
   GET = 'get',

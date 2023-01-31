@@ -4,13 +4,13 @@ import {
   LanguageCode,
   TranslatedText,
 } from './Language';
-import useFetch from '../../lib/hooks/useFetch';
+import useFetch from '../../hooks/useFetch';
 import {
   AutoDetectedLanguageRequest,
   HttpMethod,
   TranslateTextRequest,
   TranslateTextResponse,
-} from '../../lib/types/api';
+} from '../../types/api';
 
 export const useAutoDetect = (
   onSuccess: (languages: AutoDetectedLanguage) => void

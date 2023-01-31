@@ -2,7 +2,6 @@ export type Dictionary = {
   compontents: {
     header: {
       title: string;
-      select: string;
     };
     translator: {
       select: string;

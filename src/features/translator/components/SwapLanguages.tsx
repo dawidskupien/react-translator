@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import Images from '../../assets';
+import Images from '../../../assets';
 
 type SwapLanguagesProps = {
   onClick: () => void;
@@ -12,7 +12,7 @@ const SwapLanguages: FC<SwapLanguagesProps> = ({ onClick }) => {
       onClick={onClick}
       className="flex items-center justify-center cursor-default"
     >
-      <img className="h-12 cursor-pointer invert" src={Images.arrows} alt="" />
+      <img className="h-12 cursor-pointer" src={Images.arrows} alt="" />
     </button>
   );
 };
