@@ -1,5 +1,5 @@
 import { FC, useMemo } from 'react';
-import { LanguageCode, Language } from '../Language';
+import { Language, LanguageCode } from '../Language';
 
 type SelectLangaugeProps = {
   languages: Array<Language>;
@@ -8,7 +8,7 @@ type SelectLangaugeProps = {
   exclude: Array<LanguageCode>;
 };
 
-const SelectLangue: FC<SelectLangaugeProps> = ({
+const SelectLanguage: FC<SelectLangaugeProps> = ({
   languages,
   onChange,
   selectedLanguage,
@@ -34,4 +34,4 @@ const SelectLangue: FC<SelectLangaugeProps> = ({
   );
 };
 
-export default SelectLangue;
+export default SelectLanguage;

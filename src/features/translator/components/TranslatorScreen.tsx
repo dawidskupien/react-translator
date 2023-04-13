@@ -3,8 +3,6 @@ import { useDebouncedCallback } from 'use-debounce';
 import Error from '../../../components/Error';
 import Loading from '../../../components/Loading';
 import useTranslations from '../../../hooks/useTranslations';
-import SelectLangue from './SelectLangue';
-
 import {
   AutoDetectedLanguage,
   Language,
@@ -15,6 +13,7 @@ import {
 import { useAutoDetect, useSupportedLanguages, useTranslate } from '../actions';
 import Confidence from './Confidence';
 import Input from './Input';
+import SelectLanguage from './SelectLanguage';
 import SwapLanguages from './SwapLanguages';
 
 const TranslatorScreen = () => {
@@ -93,7 +92,7 @@ const TranslatorScreen = () => {
     <main className="flex justify-center items-center bg-background flex-1">
       <form className="flex flex-col md:flex-row md:gap-10 ">
         <div className="w-56 sm:w-80">
-          <SelectLangue
+          <SelectLanguage
             languages={languages}
             exclude={[selectedLanguage.target]}
             onChange={(newCode) =>
@@ -147,7 +146,7 @@ const TranslatorScreen = () => {
           }}
         />
         <div className="w-56 sm:w-80">
-          <SelectLangue
+          <SelectLanguage
             languages={languages}
             exclude={[selectedLanguage.source, LanguageCode.Auto]}
             onChange={(newCode) =>
